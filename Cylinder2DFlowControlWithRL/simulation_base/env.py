@@ -20,7 +20,7 @@ import os
 cwd = os.getcwd()
 
 nb_actuations = 400 # Number of actions (NN actuations) taken per episode (Number of action intervals)
-simulation_duration = 200
+simulation_duration = 200 # time unit duration of each simulation
 
 def resume_env(plot=False,  # To plot results (Field, controls, lift, drag, rec area) during training
                dump_vtu=False,  # If not False, create vtu files of area, velocity, pressure, every 'dump_vtu' steps
@@ -52,7 +52,7 @@ def resume_env(plot=False,  # To plot results (Field, controls, lift, drag, rec 
                            'template': 'geometry_2d.template_geo',  # relative path of geometry file template
                            'clscale': 1,
                            # mesh size scaling ratio (all mesh characteristic lenghts of geometry file scaled by this factor)
-                           'remesh': False,  # remesh toggle (from resume_env args)
+                           'remesh': False,  # remesh toggle (from resume_env args), set False if correct mesh already exists in the folder
                            'jets_toggle': 1,  # toggle Jets --> 0 : No jets, 1: Yes jets
                            'jet_width': 0.1,  # Jet Width
                            'height_cylinder': 1,  # Cylinder Height
@@ -91,7 +91,7 @@ def resume_env(plot=False,  # To plot results (Field, controls, lift, drag, rec 
                          'single_input': single_input,
                          # whether to feed as input probe values or difference between average top/bottom pressures
                          'single_output': 0, #single_output,   whether policy network outputs one or two outputs
-                         'symmetric': False,
+                         'symmetric': False, # whether the jets should produce symmetric outputs
                          'include_actions': True
                          }
 
@@ -188,5 +188,5 @@ def resume_env(plot=False,  # To plot results (Field, controls, lift, drag, rec 
 
         return env_2d_cylinder
 
-
+    _init()
     return _init  # resume_env() returns instance of Environment object

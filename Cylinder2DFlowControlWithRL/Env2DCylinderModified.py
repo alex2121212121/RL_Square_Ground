@@ -904,7 +904,7 @@ class Env2DCylinderModified(gym.Env):
                  terminal
                  reward (- CD (-) mean over action step + 0.2 * abs of CL mean over action step)
         '''
-        action = actions
+        action = actions    # For control: action = actions , for no control: action = None
 
 
         if action is None:
@@ -1042,15 +1042,21 @@ class Env2DCylinderModified(gym.Env):
         elif(self.reward_function == 'max_recirculation_area'):
             return self.area_probe.sample(self.u_, self.p_)
         
-        elif self.reward_function == 'drag':  # a bit dangerous, may be injecting some momentum
+        elif self.reward_function == 'drag':  # a bit dangerous, may be injecting some momentum, minimises only drag
             return self.history_parameters["drag"].get()[-1] + mean_drag_no_control
         
-        elif self.reward_function == 'drag_plain_lift':  # a bit dangerous, may be injecting some momentum
+        elif self.reward_function == 'drag_plain_lift':  # a bit dangerous, may be injecting some momentum, also minimises lift
             avg_length = min(500, self.number_steps_execution)
             avg_drag = np.mean(self.history_parameters["drag"].get()[-avg_length:])
             avg_lift = np.mean(self.history_parameters["lift"].get()[-avg_length:])
             return avg_drag + mean_drag_no_control - 0.2 * abs(avg_lift)
-        
+
+        elif self.reward_function == 'drag_downforce':  # a bit dangerous, may be injecting some momentum, also promotes negative lift
+            avg_length = min(500, self.number_steps_execution)
+            avg_drag = np.mean(self.history_parameters["drag"].get()[-avg_length:])
+            avg_lift = np.mean(self.history_parameters["lift"].get()[-avg_length:])
+            return avg_drag + mean_drag_no_control - 1.0 * avg_lift
+
         elif self.reward_function == 'max_plain_drag':  # a bit dangerous, may be injecting some momentum
             values_drag_in_last_execute = self.history_parameters["drag"].get()[-self.number_steps_execution:]
             return - (np.mean(values_drag_in_last_execute) + mean_drag_no_control)
@@ -1144,7 +1150,7 @@ class Env2DCylinderModified(gym.Env):
             weight = 2
             return ins_drag + mean_drag_no_control - weight * ins_action
             
-        elif self.reward_function=='power_reward':
+        elif self.reward_function=='power_reward': # Power saving reward function
             Uinf = 1
             rhoinf = 1
             Sa = 0.1 # Area of the jet
@@ -1156,7 +1162,7 @@ class Env2DCylinderModified(gym.Env):
             self.PSR = dPD/Pact
             return dPD - Pact
         
-        elif self.reward_function=='Tavg_power_reward':
+        elif self.reward_function=='Tavg_power_reward': # Time averaged power saving reward function
             avg_length = min(500, self.number_steps_execution)
             Uinf = 1
             rhoinf = 1

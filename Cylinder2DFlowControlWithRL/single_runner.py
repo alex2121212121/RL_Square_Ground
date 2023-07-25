@@ -48,7 +48,7 @@ if __name__ == '__main__':
     horizon = 800 # Number of actions for single run. Non-dimensional time is horizon*action_step_size (usually horizon*0.5)
     
     agent = TQC.load(saver_restore)
-    env = SubprocVecEnv([resume_env(plot=False, dump_vtu=200, single_run=True, horizon=horizon, n_env=99)], start_method='spawn')
+    env = SubprocVecEnv([resume_env(plot=False, dump_vtu=200, single_run=True, horizon=horizon, n_env=99)], start_method='spawn') # dump_vtu dumps vtu file: every X time units
     env = VecFrameStack(env, n_stack=35)
     env = VecNormalize.load(venv=env, load_path=vecnorm_path)
 

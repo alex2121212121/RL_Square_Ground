@@ -9,5 +9,6 @@ module load anaconda3/personal
 source activate fenicsproject
 
 python3 make_mesh.py
+#generates CFD mesh on the cluster to appear in the 'mesh' folder
 
 exit 0
